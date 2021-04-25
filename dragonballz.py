@@ -103,9 +103,9 @@ class Window:
         pygame.draw.rect(self.attributes.WIN, self.attributes.HEALTH_COLOR_TOP,
                          (self.attributes.WIDTH - 1270, 10, goku_health, 10))
         pygame.draw.rect(self.attributes.WIN, self.attributes.HEALTH_COLOR_BOTTOM,
-                         (self.attributes.BORDER.x + 130, 10, 500, 10))
+                         (self.attributes.BORDER.x+130, 10, 500, 10))
         pygame.draw.rect(self.attributes.WIN, self.attributes.HEALTH_COLOR_TOP,
-                         (self.attributes.BORDER.x + 130, 10, jiren_health, 10))
+                         (self.attributes.BORDER.x+130, 10, jiren_health, 10))
         self.attributes.WIN.blit(self.attributes.GOKU, (goku.x, goku.y))
         self.attributes.WIN.blit(self.attributes.JIREN, (jiren.x, jiren.y))
         for bullet in goku_power:
@@ -150,10 +150,10 @@ class GameLogic:
                 if event.type == self.attributes.JIREN_HIT:
                     goku_health -= 25
             winner_text = ""
-            if goku_health <= 0:
+            if goku_health <=0:
                 winner_text = "JIREN WINS!!"
             if jiren_health <= 0:
-                winner_text = "GOKU WINS!!"
+                winner_text = "GOKU WINS"
             if winner_text != "":
                 self.window.draw_winner(winner_text)
                 break
