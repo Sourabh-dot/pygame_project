@@ -1,4 +1,5 @@
 import pygame
+import os
 
 pygame.font.init()
 
@@ -13,26 +14,29 @@ class GameAttributes:
     JIREN_POWER_COLOR = (255, 69, 0)
     BORDER = pygame.Rect(WIDTH // 2 - 5, 0, 10, HEIGHT)
     FPS = 60
-    BULLET_VEL = 7
+    BULLET_VEL = 14
     MAX_BULLETS = 2
     VEL = 5
     CHARACTER_HEIGHT, CHARACTER_WIDTH = 90, 70
-    HEALTH_FONT = pygame.font.SysFont('comicsans', 40)
+    HEALTH_FONT = pygame.font.SysFont('comicsans', 25)
+    MAX_HEALTH = 1000
+    HEALTH_COLOR_BOTTOM = (255, 0, 0)
+    HEALTH_COLOR_TOP = (0, 255, 0)
     WINNER_FONT = pygame.font.SysFont('comicsans', 100)
 
     GOKU_HIT = pygame.USEREVENT + 1
     JIREN_HIT = pygame.USEREVENT + 2
 
-    GOKU_IMAGE = pygame.image.load('Assets/goku.png')
+    GOKU_IMAGE = pygame.image.load(os.path.join('Assets', 'goku.png'))
     GOKU = pygame.transform.scale(GOKU_IMAGE, (CHARACTER_HEIGHT, CHARACTER_WIDTH))
-    JIREN_IMAGE = pygame.image.load('Assets/jiren.png')
+    JIREN_IMAGE = pygame.image.load(os.path.join('Assets', 'jiren.png'))
     JIREN = pygame.transform.scale(JIREN_IMAGE, (CHARACTER_HEIGHT, CHARACTER_WIDTH))
-    TOURNAMENT_IMAGE = pygame.image.load('Assets/tournament.png')
+    TOURNAMENT_IMAGE = pygame.image.load(os.path.join('Assets', 'dbz.jpg'))
     TOURNAMENT = pygame.transform.scale(TOURNAMENT_IMAGE, (WIDTH, HEIGHT))
 
 
 class CharacterControl:
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.attributes = GameAttributes()
 
@@ -92,8 +96,16 @@ class Window:
                                                               self.attributes.WHITE)
         jiren_health_text = self.attributes.HEALTH_FONT.render("HEALTH :" + str(jiren_health), True,
                                                                self.attributes.WHITE)
-        self.attributes.WIN.blit(jiren_health_text, (self.attributes.WIDTH - jiren_health_text.get_width() - 10, 10))
-        self.attributes.WIN.blit(goku_health_text, (10, 10))
+        self.attributes.WIN.blit(jiren_health_text, (self.attributes.WIDTH - jiren_health_text.get_width() - 10, 25))
+        self.attributes.WIN.blit(goku_health_text, (10, 25))
+        pygame.draw.rect(self.attributes.WIN, self.attributes.HEALTH_COLOR_BOTTOM,
+                         (self.attributes.WIDTH - 1270, 10, 500, 10))
+        pygame.draw.rect(self.attributes.WIN, self.attributes.HEALTH_COLOR_TOP,
+                         (self.attributes.WIDTH - 1270, 10, goku_health, 10))
+        pygame.draw.rect(self.attributes.WIN, self.attributes.HEALTH_COLOR_BOTTOM,
+                         (self.attributes.BORDER.x + 130, 10, 500, 10))
+        pygame.draw.rect(self.attributes.WIN, self.attributes.HEALTH_COLOR_TOP,
+                         (self.attributes.BORDER.x + 130, 10, jiren_health, 10))
         self.attributes.WIN.blit(self.attributes.GOKU, (goku.x, goku.y))
         self.attributes.WIN.blit(self.attributes.JIREN, (jiren.x, jiren.y))
         for bullet in goku_power:
@@ -104,7 +116,7 @@ class Window:
 
 
 class GameLogic:
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.attributes = GameAttributes()
         self.control = CharacterControl()
@@ -119,8 +131,8 @@ class GameLogic:
         clock = pygame.time.Clock()
         goku_power = []
         jiren_power = []
-        goku_health = 100
-        jiren_health = 100
+        goku_health = 500
+        jiren_health = 500
         while run:
             clock.tick(self.attributes.FPS)
             for event in pygame.event.get():
@@ -134,19 +146,17 @@ class GameLogic:
                         bullet = pygame.Rect(jiren.x, jiren.y + jiren.height // 2 - 2, 20, 10)
                         jiren_power.append(bullet)
                 if event.type == self.attributes.GOKU_HIT:
-                    jiren_health -= 10
+                    jiren_health -= 25
                 if event.type == self.attributes.JIREN_HIT:
-                    goku_health -= 10
-
+                    goku_health -= 25
             winner_text = ""
             if goku_health <= 0:
-                winner_text = "JIREN WON!!"
+                winner_text = "JIREN WINS!!"
             if jiren_health <= 0:
-                winner_text = "GOKU WON!!"
+                winner_text = "GOKU WINS!!"
             if winner_text != "":
                 self.window.draw_winner(winner_text)
                 break
-
             key_pressed = pygame.key.get_pressed()
             self.control.goku_keypad(goku, key_pressed)
             self.control.jiren_keypad(jiren, key_pressed)
